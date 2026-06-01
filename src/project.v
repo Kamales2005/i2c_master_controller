@@ -11,20 +11,11 @@ module tt_um_kamales_i2c_master (
     input  wire       rst_n
 );
 
-    reg [7:0] data_reg;
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n)
-            data_reg <= 8'h00;
-        else
-            data_reg <= ui_in;
-    end
-
-    assign uo_out  = data_reg;
+    assign uo_out = ui_in;
 
     assign uio_out = 8'b0;
     assign uio_oe  = 8'b0;
 
-    wire _unused = &{ena, uio_in, 1'b0};
+    wire _unused = &{ena, clk, rst_n, uio_in, 1'b0};
 
 endmodule
