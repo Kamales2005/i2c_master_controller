@@ -2,30 +2,30 @@ project:
   title: "I2C Master Controller"
   author: "Kamales D"
   discord: ""
-  description: "Simple I2C Master transmitting one byte."
+  description: "Simple I2C Master Controller that transmits one byte to a fixed slave address (0x50). Generates START and STOP conditions and provides BUSY, DONE, and ACK status outputs."
   language: "Verilog"
   clock_hz: 1000000
 
   tiles: "1x1"
 
-  top_module: "tt_um_kamales_i2c_master"
+  top_module: "tt_um_i2c_master"
 
   source_files:
     - "project.v"
 
 pinout:
   ui[0]: "START"
-  ui[1]: "DATA1"
-  ui[2]: "DATA2"
-  ui[3]: "DATA3"
-  ui[4]: "DATA4"
-  ui[5]: "DATA5"
-  ui[6]: "DATA6"
-  ui[7]: "DATA7"
+  ui[1]: "DATA_BIT1"
+  ui[2]: "DATA_BIT2"
+  ui[3]: "DATA_BIT3"
+  ui[4]: "DATA_BIT4"
+  ui[5]: "DATA_BIT5"
+  ui[6]: "DATA_BIT6"
+  ui[7]: "DATA_BIT7"
 
   uo[0]: "BUSY"
-  uo[1]: ""
-  uo[2]: ""
+  uo[1]: "DONE"
+  uo[2]: "ACK"
   uo[3]: ""
   uo[4]: ""
   uo[5]: ""
