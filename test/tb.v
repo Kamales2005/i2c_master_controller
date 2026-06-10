@@ -1,47 +1,81 @@
-`default_nettype none
 `timescale 1ns / 1ps
 
-module tb ();
+module tb;
 
-  initial begin
-    $dumpfile("tb.fst");
-    $dumpvars(0, tb);
-    #1;
-  end
+    reg  [7:0] ui_in;
+    wire [7:0] uo_out;
 
-  reg clk;
-  reg rst_n;
-  reg ena;
-  reg [7:0] ui_in;
-  reg [7:0] uio_in;
+    reg  [7:0] uio_in;
+    wire [7:0] uio_out;
+    wire [7:0] uio_oe;
 
-  wire [7:0] uo_out;
-  wire [7:0] uio_out;
-  wire [7:0] uio_oe;
+    reg ena;
+    reg clk;
+    reg rst_n;
 
-`ifdef GL_TEST
-  wire VPWR = 1'b1;
-  wire VGND = 1'b0;
-`endif
+    // DUT
+    tt_um_i2c_master dut (
+        .ui_in(ui_in),
+        .uo_out(uo_out),
 
-  // Instantiate your design
-  tt_um_kamales_i2c_master user_project (
+        .uio_in(uio_in),
+        .uio_out(uio_out),
+        .uio_oe(uio_oe),
 
-`ifdef GL_TEST
-      .VPWR(VPWR),
-      .VGND(VGND),
-`endif
+        .ena(ena),
+        .clk(clk),
+        .rst_n(rst_n)
+    );
 
-      .ui_in(ui_in),
-      .uo_out(uo_out),
+    // Clock generation (100 MHz)
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
 
-      .uio_in(uio_in),
-      .uio_out(uio_out),
-      .uio_oe(uio_oe),
+    initial begin
 
-      .ena(ena),
-      .clk(clk),
-      .rst_n(rst_n)
-  );
+        $dumpfile("tb.vcd");
+        $dumpvars(0, tb);
+
+        // Initial values
+        ui_in  = 8'h00;
+        uio_in = 8'h00;
+        ena    = 1'b1;
+        rst_n  = 1'b0;
+
+        // Reset
+        #20;
+        rst_n = 1'b1;
+
+        // Wait a few cycles
+        #20;
+
+        // Data to transmit = A5h
+        // Bit0 acts as start signal in this design
+        ui_in = 8'hA5;
+
+        #100;
+
+        // Clear start
+        ui_in = 8'h00;
+
+        #500;
+
+        // Check status
+        $display("--------------------------------");
+        $display("busy = %b", uo_out[0]);
+        $display("done = %b", uo_out[1]);
+        $display("ack  = %b", uo_out[2]);
+        $display("--------------------------------");
+
+        if (uo_out[1] == 1'b1)
+            $display("TEST PASSED");
+        else
+            $display("TEST FAILED");
+
+        #50;
+        $finish;
+    end
 
 endmodule
